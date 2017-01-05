@@ -336,7 +336,11 @@ public class TileEntityConnectorLV extends TileEntityImmersiveConnectable implem
 				if(con.cableType!=null && end!=null)
 				{
 					int atmOut = Math.min(powerForSort,con.cableType.getTransferRate());
-					int tempR = end.outputEnergy(atmOut, true, energyType);
+					try{
+						int tempR = end.outputEnergy(atmOut, true, energyType);
+					}catch(Exception e){
+						int tempR = 0;
+					}
 					if(tempR>0)
 					{
 						powerSorting.put(con, tempR);
@@ -353,12 +357,21 @@ public class TileEntityConnectorLV extends TileEntityImmersiveConnectable implem
 					{
 						float prio = powerSorting.get(con)/(float)sum;
 						int output = (int)(powerForSort*prio);
-
-						int tempR = end.outputEnergy(Math.min(output, con.cableType.getTransferRate()), true, energyType);
+						try{
+							int tempR = end.outputEnergy(Math.min(output, con.cableType.getTransferRate()), true, energyType);
+						}catch(Exception e){
+							int tempR = 0;
+						}
 						int r = tempR;
 						int maxInput = getMaxInput();
 						tempR -= (int) Math.max(0, Math.floor(tempR*con.getPreciseLossRate(tempR,maxInput)));
-						end.outputEnergy(tempR, simulate, energyType);
+						
+						try{
+							end.outputEnergy(tempR, simulate, energyType);
+						}catch(Exception e){
+						
+						}
+						
 						HashSet<IImmersiveConnectable> passedConnectors = new HashSet<IImmersiveConnectable>();
 						float intermediaryLoss = 0;
 						for(Connection sub : con.subConnections)
